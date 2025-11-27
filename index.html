@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TESY Service Portal – Prototype</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --tesy-purple: #6f2c8f;
+      --tesy-purple-dark: #511f69;
+      --tesy-green: #72be44;
+      --bg-light: #f5f5f8;
+      --border-subtle: #e1e1eb;
+      --text-main: #222233;
+      --text-muted: #6b6b80;
+      --white: #ffffff;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --shadow-soft: 0 18px 40px rgba(15, 10, 55, 0.12);
+      --transition-fast: 0.18s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top left, #f2ebff 0, #f4f7ff 35%, #ffffff 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1200px;
+      width: 100%;
+      min-height: 640px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: linear-gradient(160deg, var(--tesy-purple-dark), var(--tesy-purple));
+      border-radius: var(--radius-xl);
+      padding: 22px 20px;
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -60px auto;
+      width: 190px;
+      height: 190px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.16), transparent 70%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 26px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-logo {
+      width: 120px;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.28));
+    }
+
+    .brand-tagline {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+
+    .sidebar-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      opacity: 0.85;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      font-size: 11px;
+      margin-bottom: 20px;
+    }
+
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--tesy-green);
+      box-shadow: 0 0 0 4px rgba(114, 190, 68, 0.3);
+    }
+
+    .nav-section-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      opacity: 0.7;
+      margin: 10px 0 8px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 14px;
+    }
+
+    .nav-item-btn {
+      width: 100%;
+      text-align: left;
+      border-radius: 999px;
+      border: none;
+      padding: 9px 12px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
+    }
+
+    .nav-item-btn span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-item-btn small {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .nav-item-btn[data-active="true"] {
+      background: var(--white);
+      color: var(--tesy-purple-dark);
+      box-shadow: 0 10px 24px rgba(12, 5, 43, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .nav-item-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .nav-item-btn[data-active="true"]:hover {
+      background: var(--white);
+    }
+
+    .nav-item-pill {
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      opacity: 0.9;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 11px;
+      opacity: 0.84;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .sidebar-footer a {
+      color: var(--white);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+      opacity: 0.9;
+    }
+
+    /* Main content */
+    .main {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: var(--radius-xl);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .main-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .main-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .main-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--tesy-green), #9ddd63);
+      color: #083010;
+      box-shadow: 0 12px 26px rgba(78, 140, 35, 0.35);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 32px rgba(78, 140, 35, 0.4);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .btn-ghost:hover {
+      background: #f1f1fb;
+      color: var(--text-main);
+    }
+
+    .tag-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #f0f2ff;
+      border: 1px solid #dee3ff;
+      color: var(--tesy-purple-dark);
+    }
+
+    .content-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--bg-light);
+      border-radius: var(--radius-lg);
+      padding: 14px 14px 16px;
+      border: 1px solid var(--border-subtle);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .panel-cta {
+      font-size: 11px;
+      color: var(--tesy-purple-dark);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 10px 10px 12px;
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: box-shadow var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card:hover {
+      box-shadow: 0 10px 26px rgba(24, 21, 70, 0.18);
+      transform: translateY(-2px);
+      border-color: rgba(111, 44, 143, 0.4);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .card-body {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .card-pill {
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: #f3f7ff;
+      border: 1px solid #dde6ff;
+      color: var(--tesy-purple-dark);
+    }
+
+    .card-link {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      color: var(--text-muted);
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 6px 0;
+      border-bottom: 1px dashed #d4d7ea;
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-weight: 600;
+    }
+
+    .status-chip {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #e6f7eb;
+      color: #145d30;
+      border: 1px solid #bde4ca;
+    }
+
+    .status-chip.warn {
+      background: #fff7e6;
+      color: #8a5a12;
+      border-color: #f5d9a7;
+    }
+
+    .status-chip.neutral {
+      background: #edf0ff;
+      color: #313665;
+      border-color: #d7dcff;
+    }
+
+    .tab-strip {
+      display: inline-flex;
+      border-radius: 999px;
+      background: #eceffc;
+      padding: 2px;
+      gap: 3px;
+    }
+
+    .tab-button {
+      border-radius: 999px;
+      border: none;
+      padding: 6px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      background: transparent;
+      color: #555776;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .tab-button[data-active="true"] {
+      background: var(--white);
+      color: var(--tesy-purple-dark);
+      box-shadow: 0 4px 10px rgba(24, 18, 80, 0.2);
+    }
+
+    .panel-section {
+      display: none;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .panel-section[data-active="true"] {
+      display: block;
+    }
+
+    /* Active screen content */
+    .screen {
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .screen[data-active="true"] {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .sidebar {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 16px;
+      }
+      .main {
+        padding: 16px;
+      }
+      .content-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .brand-logo {
+        width: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <!-- Replace src with the direct TESY logo URL from Wikimedia/brand assets -->
+        <img
+          class="brand-logo"
+          src="https://upload.wikimedia.org/wikipedia/commons/placeholder/TESY_Logo%26Tagline.png"
+          alt="TESY logo"
+        />
+        <div class="brand-tagline">
+          TESY Service Portal<br />
+          <span style="opacity: 0.8">for partners & technicians</span>
+        </div>
+      </div>
+
+      <div class="pill">
+        <span class="pill-dot"></span>
+        <span>Live environment • tesyservice.com</span>
+      </div>
+
+      <div class="nav-section-label">Main</div>
+      <ul class="nav-list">
+        <li>
+          <button class="nav-item-btn" data-screen="dashboard" data-active="true">
+            <span>
+              <strong>Dashboard</strong>
+              <small>Today’s workload</small>
+            </span>
+            <span class="nav-item-pill">Overview</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item-btn" data-screen="service-requests">
+            <span>
+              <strong>Service Requests</strong>
+              <small>Claims & tickets</small>
+            </span>
+            <span class="nav-item-pill">+ New</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item-btn" data-screen="spare-parts">
+            <span>
+              <strong>Spare Parts</strong>
+              <small>Catalog & orders</small>
+            </span>
+            <span class="nav-item-pill">Stock</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-item-btn" data-screen="manuals">
+            <span>
+              <strong>Manuals & Tutorials</strong>
+              <small>Knowledge center</small>
+            </span>
+            <span class="nav-item-pill">Docs</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="nav-section-label">Account</div>
+      <ul class="nav-list">
+        <li>
+          <button class="nav-item-btn" data-screen="profile">
+            <span>
+              <strong>My Profile</strong>
+              <small>Service region & skills</small>
+            </span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        Logged in as <strong>TESY Service Partner</strong><br />
+        Need help? <a href="https://tesyservice.com/login.php" target="_blank" rel="noreferrer">Open tesyservice.com</a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <header class="main-header">
+        <div>
+          <div class="main-title">Service Partner Workspace</div>
+          <div class="main-subtitle">
+            Quickly access claims, spare parts, and technical documentation in one unified UI.
+          </div>
+        </div>
+        <div class="header-actions">
+          <span class="tag-badge">MVP Prototype</span>
+          <button class="btn btn-ghost" id="btn-show-demo-login">
+            View login state
+          </button>
+          <button class="btn btn-primary" id="btn-new-request">
+            + New Service Request
+          </button>
+        </div>
+      </header>
+
+      <!-- DASHBOARD SCREEN -->
+      <section class="screen" id="screen-dashboard" data-active="true">
+        <div class="content-layout">
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Today’s service snapshot</div>
+                <div class="panel-subtitle">
+                  High-level overview of your claims, visits, and urgent cases.
+                </div>
+              </div>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Open claims</span>
+              <span class="stat-value">8 <span class="status-chip">3 due today</span></span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">On-site visits scheduled</span>
+              <span class="stat-value">4 <span class="status-chip neutral">Route optimized</span></span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Pending spare-part approval</span>
+              <span class="stat-value">2 <span class="status-chip warn">Awaiting TESY</span></span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Avg. resolution time (last 7 days)</span>
+              <span class="stat-value">1.8 days</span>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Quick actions</div>
+                <div class="panel-subtitle">
+                  Click a tile to jump straight into a typical task flow.
+                </div>
+              </div>
+            </div>
+
+            <div class="card-grid">
+              <article class="card" data-jump="service-requests">
+                <div class="card-title">Create warranty claim</div>
+                <div class="card-body">
+                  Register a new warranty case, attach photos and serial number, and send to TESY.
+                </div>
+                <div class="card-footer">
+                  <span class="card-pill">~ 2 min</span>
+                  <span class="card-link">Start →</span>
+                </div>
+              </article>
+
+              <article class="card" data-jump="spare-parts">
+                <div class="card-title">Search spare parts</div>
+                <div class="card-body">
+                  Look up parts by product code, serial number, or exploded diagrams.
+                </div>
+                <div class="card-footer">
+                  <span class="card-pill">Catalog</span>
+                  <span class="card-link">Browse →</span>
+                </div>
+              </article>
+
+              <article class="card" data-jump="manuals">
+                <div class="card-title">Open manuals & videos</div>
+                <div class="card-body">
+                  Access installation guides, troubleshooting, and certified repair tutorials.
+                </div>
+                <div class="card-footer">
+                  <span class="card-pill">Knowledge</span>
+                  <span class="card-link">View →</span>
+                </div>
+              </article>
+
+              <article class="card" data-jump="service-requests">
+                <div class="card-title">View today’s schedule</div>
+                <div class="card-body">
+                  Check planned visits, addresses, and contact details for your next jobs.
+                </div>
+                <div class="card-footer">
+                  <span class="card-pill">Agenda</span>
+                  <span class="card-link">Open →</span>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- SERVICE REQUESTS SCREEN -->
+      <section class="screen" id="screen-service-requests">
+        <div class="content-layout">
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Warranty & service requests</div>
+                <div class="panel-subtitle">
+                  Track and manage all open claims coming from tesywarranty.com and tesyservice.com.
+                </div>
+              </div>
+              <button class="btn btn-primary">
+                + New claim
+              </button>
+            </div>
+
+            <div class="tab-strip">
+              <button class="tab-button" data-tab-target="tab-open" data-active="true">
+                Open (8)
+              </button>
+              <button class="tab-button" data-tab-target="tab-today">
+                Due today (3)
+              </button>
+              <button class="tab-button" data-tab-target="tab-history">
+                History
+              </button>
+            </div>
+
+            <div class="panel-section" id="tab-open" data-active="true">
+              <p>List of all open claims with status, SLA timer, and shortcuts to contact customers.</p>
+            </div>
+            <div class="panel-section" id="tab-today">
+              <p>Only claims due today with optimized route and time windows.</p>
+            </div>
+            <div class="panel-section" id="tab-history">
+              <p>Resolved claims from the last 90 days with filters and export.</p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Claim preview</div>
+                <div class="panel-subtitle">
+                  Click a claim row (in a real build) to show details here.
+                </div>
+              </div>
+              <span class="panel-cta" id="cta-simulate-claim">Simulate selection</span>
+            </div>
+            <div id="claim-preview-content" class="panel-section" data-active="true">
+              <p style="font-size: 12px; color: var(--text-muted);">
+                No claim selected. Use “Simulate selection” to load an example.
+              </p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- SPARE PARTS SCREEN -->
+      <section class="screen" id="screen-spare-parts">
+        <div class="content-layout">
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Spare parts catalog</div>
+                <div class="panel-subtitle">
+                  Search by product code, serial number, or part name with live stock from ERP.
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+              <input
+                id="parts-search-input"
+                type="text"
+                placeholder="Search parts, e.g. ‘Anode rod 1200W’"
+                style="flex:1; padding:8px 10px; border-radius:999px; border:1px solid var(--border-subtle); font-size:13px;"
+              />
+              <button class="btn btn-primary" id="parts-search-button">Search</button>
+            </div>
+
+            <div id="parts-search-result" class="panel-section" data-active="true">
+              <p style="font-size:12px; color:var(--text-muted);">
+                Try searching for a part – this is a static demo, so we’ll just show a mocked result.
+              </p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Recent spare-part orders</div>
+                <div class="panel-subtitle">
+                  Quick recap of your last orders synced from SAP.
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-row">
+              <span class="stat-label">Order #TSY-2025-0421</span>
+              <span class="stat-value">
+                6 items
+                <span class="status-chip">Shipped</span>
+              </span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Order #TSY-2025-0418</span>
+              <span class="stat-value">
+                3 items
+                <span class="status-chip neutral">In preparation</span>
+              </span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Order #TSY-2025-0412</span>
+              <span class="stat-value">
+                1 item
+                <span class="status-chip warn">Awaiting payment</span>
+              </span>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- MANUALS SCREEN -->
+      <section class="screen" id="screen-manuals">
+        <div class="content-layout">
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Manuals & video tutorials</div>
+                <div class="panel-subtitle">
+                  Centralised knowledge center for TESY installers and service partners.
+                </div>
+              </div>
+            </div>
+
+            <div class="card-grid">
+              <article class="card">
+                <div class="card-title">Electric water heaters – Installation</div>
+                <div class="card-body">
+                  Step-by-step guide for proper mounting, electrical connection, and first start.
+                </div>
+                <div class="card-footer">
+                  <span class="card-pill">PDF</span>
+                  <span class="card-link">Download</span>
+                </div>
+              </article>
+              <article class="card">
+                <div class="card-title">Heat pump boiler – Troubleshooting</div>
+                <div class="card-body">
+                  Most common error codes, diagnostic sequence, and recommended checks.
+                </div>
+                <div class="card-footer">
+                  <span class="card-pill">Video</span>
+                  <span class="card-link">Watch</span>
+                </div>
+              </article>
+              <article class="card">
+                <div class="card-title">Warranty & documentation rules</div>
+                <div class="card-body">
+                  What is covered, required documents, and photo evidence guidelines.
+                </div>
+                <div class="card-footer">
+                  <span class="card-pill">Policy</span>
+                  <span class="card-link">Open</span>
+                </div>
+              </article>
+              <article class="card">
+                <div class="card-title">Spare-part replacement best practices</div>
+                <div class="card-body">
+                  Safety checklist and recommended sequence for replacing critical parts.
+                </div>
+                <div class="card-footer">
+                  <span class="card-pill">Guide</span>
+                  <span class="card-link">Read</span>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Bookmarks (future)</div>
+                <div class="panel-subtitle">
+                  In the full version, partners will pin most-used docs and videos here.
+                </div>
+              </div>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted);">
+              For now this is a placeholder to illustrate how an integrated knowledge center could
+              remember frequently used content per service partner.
+            </p>
+          </section>
+        </div>
+      </section>
+
+      <!-- PROFILE SCREEN -->
+      <section class="screen" id="screen-profile">
+        <div class="content-layout">
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">My profile</div>
+                <div class="panel-subtitle">
+                  Basic profile mockup: region, product families, and notification preferences.
+                </div>
+              </div>
+            </div>
+
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+              In the real system, this would be integrated with TESY’s identity provider and partner
+              master data.
+            </p>
+
+            <div class="stat-row">
+              <span class="stat-label">Name</span>
+              <span class="stat-value">Demo Technician</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Region</span>
+              <span class="stat-value">Sofia & Central Bulgaria</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Certified product families</span>
+              <span class="stat-value">Water heaters, Heat pump solutions</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Notifications</span>
+              <span class="stat-value">E-mail + SMS</span>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Session & security</div>
+                <div class="panel-subtitle">
+                  Placeholder for SSO session info and device management.
+                </div>
+              </div>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted);">
+              For a unified TESY portal, this area would show last login, devices, and allow logout
+              from all TESY portals at once using shared SSO.
+            </p>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Simple SPA-style switching for nav items
+    const navButtons = document.querySelectorAll(".nav-item-btn");
+    const screens = document.querySelectorAll(".screen");
+
+    function activateScreen(screenId) {
+      screens.forEach((screen) => {
+        screen.dataset.active = screen.id === "screen-" + screenId ? "true" : "false";
+      });
+
+      navButtons.forEach((btn) => {
+        btn.dataset.active = btn.getAttribute("data-screen") === screenId ? "true" : "false";
+      });
+    }
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = btn.getAttribute("data-screen");
+        activateScreen(target);
+      });
+    });
+
+    // Quick cards that jump to sections
+    document.querySelectorAll(".card[data-jump]").forEach((card) => {
+      card.addEventListener("click", () => {
+        const target = card.getAttribute("data-jump");
+        activateScreen(target);
+      });
+    });
+
+    // Tabs in Service Requests
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabSections = document.querySelectorAll(".panel-section[id^='tab-']");
+
+    tabButtons.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const targetId = tab.getAttribute("data-tab-target");
+        tabButtons.forEach((t) => (t.dataset.active = "false"));
+        tabSections.forEach((sec) => (sec.dataset.active = "false"));
+        tab.dataset.active = "true";
+        document.getElementById(targetId).dataset.active = "true";
+      });
+    });
+
+    // Simulate selecting a claim
+    const claimPreview = document.getElementById("claim-preview-content");
+    document
+      .getElementById("cta-simulate-claim")
+      .addEventListener("click", () => {
+        claimPreview.innerHTML =
+          '<p style="font-size:12px; color:var(--text-muted); line-height:1.5;">' +
+          "<strong>Example claim #TSY-CLM-1024</strong><br>" +
+          "Product: TESY BelliSlimo 80L<br>" +
+          "Issue: No hot water, error code E03<br>" +
+          "Status: <span class='status-chip'>Visit scheduled – today 14:30</span><br>" +
+          "Customer: Ivan Petrov, Sofia<br>" +
+          "Notes: Check thermostat, wiring, and flow sensor.</p>";
+      });
+
+    // Spare parts search mock
+    document
+      .getElementById("parts-search-button")
+      .addEventListener("click", () => {
+        const input = document.getElementById("parts-search-input").value.trim();
+        const result = document.getElementById("parts-search-result");
+        const query = input || "Anode rod 1200W";
+        result.innerHTML =
+          "<p style='font-size:12px; color:var(--text-muted);'>" +
+          "Mocked result for <strong>" +
+          query +
+          "</strong>:" +
+          "</p>" +
+          "<div class='stat-row'>" +
+          "<span class='stat-label'>Part code</span>" +
+          "<span class='stat-value'>TESY-AN1200-ROD</span>" +
+          "</div>" +
+          "<div class='stat-row'>" +
+          "<span class='stat-label'>Stock</span>" +
+          "<span class='stat-value'>24 pcs <span class='status-chip'>Available</span></span>" +
+          "</div>" +
+          "<div class='stat-row'>" +
+          "<span class='stat-label'>Location</span>" +
+          "<span class='stat-value'>Warehouse Sofia</span>" +
+          "</div>";
+      });
+
+    // Demo "View login state" button
+    document
+      .getElementById("btn-show-demo-login")
+      .addEventListener("click", () => {
+        alert(
+          "In a real build this button could open a modal showing SSO session details, " +
+            "linked TESY portals, and a ‘Sign out from all’ option."
+        );
+      });
+
+    // Demo "New Service Request" button
+    document
+      .getElementById("btn-new-request")
+      .addEventListener("click", () => {
+        activateScreen("service-requests");
+        alert(
+          "In the production portal, this would open a multi-step form to create a new warranty claim."
+        );
+      });
+  </script>
+</body>
+</html>
